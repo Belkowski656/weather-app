@@ -1,13 +1,13 @@
 {
     "version": 3,
-    "mappings": "ACAA,OAAO,CAAC,mFAAI,CAEZ,AAAA,CAAC,AAAC,CACE,MAAM,CAAE,CAAC,CACT,OAAO,CAAE,CAAC,CACV,UAAU,CAAE,UAAU,CACzB,AAED,AAAA,CAAC,CACD,MAAM,AAAC,CACH,2BAA2B,CAAE,WAAW,CAC3C,AAED,AAAA,IAAI,AAAC,CACD,WAAW,CAAE,uBAAuB,CACvC",
+    "mappings": "ACAA,OAAO,CAAC,mFAAI,CAEZ,AAAA,CAAC,AAAC,CACE,MAAM,CAAE,CAAC,CACT,OAAO,CAAE,CAAC,CACV,UAAU,CAAE,UAAU,CACzB,AAED,AAAA,CAAC,CACD,MAAM,AAAC,CACH,2BAA2B,CAAE,WAAW,CAC3C,AAED,AAAA,IAAI,AAAC,CACD,WAAW,CAAE,uBAAuB,CACvC,AIfD,AAAA,OAAO,AAAC,CACJ,OAAO,CAAE,IAAI,CACb,eAAe,CAAE,MAAM,CACvB,OAAO,CAAE,GAAG,CAqBf,AAnBI,AAAD,cAAQ,AAAC,CACL,OAAO,CAAE,IAAI,CACb,SAAS,CFCJ,IAAI,CEAT,MAAM,CAAE,IAAI,CACZ,MAAM,CAAE,GAAG,CAAC,KAAK,CFRnB,OAAO,CESL,YAAY,CAAE,IAAI,CAKrB,AAVA,AAOG,cAPI,AAOH,MAAM,AAAC,CACJ,OAAO,CAAE,IAAI,CAChB,AAGJ,AAAD,YAAM,AAAC,CACH,SAAS,CFVJ,IAAI,CEWT,MAAM,CAAE,IAAI,CACZ,KAAK,CAAE,IAAI,CACX,MAAM,CAAE,GAAG,CAAC,KAAK,CFpBnB,OAAO,CEqBL,OAAO,CAAE,SAAS,CACrB",
     "sources": [
         "../scss/style.scss",
         "../scss/basic/_reset.scss",
         "../scss/variables/_variables-main.scss",
         "../scss/variables/_variables.scss",
-        "../scss/variables/_mixins.scss",
-        "../scss/layouts/_layouts-main.scss"
+        "../scss/layouts/_layouts-main.scss",
+        "../scss/layouts/_search.scss"
     ],
     "names": [],
     "file": "style.css"
