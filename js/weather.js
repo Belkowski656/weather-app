@@ -1,3 +1,5 @@
+const search = document.querySelector('.search__btn');
+
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 window.addEventListener('load', () => {
@@ -22,8 +24,22 @@ window.addEventListener('load', () => {
     }
 })
 
+search.addEventListener('click', (e) => {
+    e.preventDefault();
+    const input = document.querySelector('.search__input');
+    const city = input.value;
+
+    fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            getCurrentWeather(data[0].lat, data[0].lon)
+        });
+
+})
+
 const getCurrentWeather = (latitude, longitude) => {
-    fetch(`https://api.weatherbit.io/v2.0/current?lat=${latitude}&lon=${longitude}&key=${apiKey}`)
+    fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`)
         .then(response => response.json())
         .then(data => {
             const date = new Date();
@@ -32,19 +48,20 @@ const getCurrentWeather = (latitude, longitude) => {
             const dayOfTheWeek = date.getDay();
             const hour = date.getHours();
             const minutes = date.getMinutes();
+
             weather = {
-                city: data.data[0].city_name,
+                city: data.name,
                 month,
                 dayOfTheMonth,
                 dayOfTheWeek,
                 hour,
                 minutes,
-                icon: data.data[0].weather.icon,
-                temp: data.data[0].temp,
-                appTemp: data.data[0].app_temp,
-                pressure: data.data[0].pres,
-                wind: data.data[0].wind_spd,
-                aqi: data.data[0].aqi,
+                icon: data.weather[0].icon,
+                temp: data.main.temp,
+                feelsLike: data.main.feels_like,
+                pressure: data.main.pressure,
+                wind: data.wind.speed,
+                humidity: data.main.humidity
             }
             showCurrentWeather(weather);
         });
@@ -52,51 +69,26 @@ const getCurrentWeather = (latitude, longitude) => {
 
 const showCurrentWeather = (weather) => {
     const data = weather;
-    const aqi = weather.aqi;
-    let aqiMessage = '';
-    let color = '';
-
-    if (aqi <= 50) {
-        aqiMessage = 'Good'
-        color = '#55A84F';
-    } else if (aqi > 50 && aqi <= 100) {
-        aqiMessage = 'Satisfactory'
-        color = '#A3C853';
-    } else if (aqi > 100 && aqi <= 150) {
-        aqiMessage = 'Moderate'
-        color = '#FFF833';
-    } else if (aqi > 150 && aqi <= 200) {
-        aqiMessage = 'Unhealthy'
-        color = '#F29C33';
-    } else if (aqi > 200 && aqi <= 300) {
-        aqiMessage = 'Very Unhealthy'
-        color = '#F1F1F1';
-    } else if (aqi > 300 && aqi <= 500) {
-        aqiMessage = 'Hazardous'
-        color = '#141518';
-    }
 
     document.querySelector('.weather__city').textContent = data.city;
 
     document.querySelector('.weather__span').textContent = `${days[data.dayOfTheWeek]} ${data.dayOfTheMonth}.${data.month.toString().length===1? '0'+data.month: data.month}`;
 
-    document.querySelector('.weather__time').textContent = `(${data.hour}:${data.minutes})`;
+    document.querySelector('.weather__time').textContent = `(${data.hour}:${data.minutes.toString().length === 1? '0'+ data.minutes : data.minutes })`;
 
-    document.querySelector('.weather__img').src = `./src/${data.icon}.png`;
-    document.querySelector('.weather__temp').textContent = data.temp;
+    document.querySelector('.weather__img').src = `http://openweathermap.org/img/wn/${data.icon}@2x.png`;
+    document.querySelector('.weather__temp').textContent = data.temp.toFixed(1);
 
-    document.querySelector('.weather__value:nth-of-type(1)').innerHTML = data.appTemp + ' &#8451;';
+    document.querySelector('.weather__value:nth-of-type(1)').innerHTML = data.feelsLike.toFixed(1) + ' &#8451;';
     document.querySelector('.weather__value:nth-of-type(2)').textContent = data.pressure.toFixed(1) + ' hPa';
     document.querySelector('.weather__value:nth-of-type(3)').textContent = (data.wind * 18 / 5).toFixed(1) + ' km/h';
-    const aqiText = document.querySelector('.weather__value:nth-of-type(4)');
+    document.querySelector('.weather__value:nth-of-type(4)').textContent = data.humidity + ' %';
 
-    aqiText.textContent = aqiMessage;
-    aqiText.style.color = color;
 };
 
-const showDetails = (weatherData) => {
-    console.log(weatherData);
-};
+// const showDetails = (weatherData) => {
+//     console.log(weatherData);
+// };
 
 // const getWeather = (latitude, longitude, forecast) => {
 //     fetch(`https://api.weatherbit.io/v2.0/forecast/hourly?lat=${latitude}&lon=${longitude}&key=${apiKey}&hours=48`)
