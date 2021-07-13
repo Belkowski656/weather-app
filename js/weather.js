@@ -8,13 +8,17 @@ window.addEventListener('load', () => {
             latitude,
             longitude
         } = position.coords;
+
         getCurrentWeather(latitude, longitude);
+        getForecast(latitude, longitude);
     }
 
     const error = () => {
         const latitude = '52.237049';
         const longitude = '21.017532';
+
         getCurrentWeather(latitude, longitude);
+        getForecast(latitude, longitude);
     }
 
     if (!navigator.geolocation) {
@@ -28,12 +32,14 @@ search.addEventListener('click', (e) => {
     e.preventDefault();
     const input = document.querySelector('.search__input');
     const city = input.value;
+    input.value = '';
 
     fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`)
         .then(response => response.json())
         .then(data => {
             console.log(data)
             getCurrentWeather(data[0].lat, data[0].lon)
+            getForecast(data[0].lat, data[0].lon);
         });
 
 })
@@ -86,39 +92,109 @@ const showCurrentWeather = (weather) => {
 
 };
 
-// const showDetails = (weatherData) => {
-//     console.log(weatherData);
-// };
+const showButtons = (forecast) => {
+    const allDays = forecast.map(weather => weather.dayOfTheWeek);
 
-// const getWeather = (latitude, longitude, forecast) => {
-//     fetch(`https://api.weatherbit.io/v2.0/forecast/hourly?lat=${latitude}&lon=${longitude}&key=${apiKey}&hours=48`)
-//         .then(response => response.json())
-//         .then(data => {
-//             const cityName = data.city_name;
-//             const weatherData = data.data.map(data => {
-//                 const date = new Date(data.timestamp_local);
-//                 const month = date.getMonth() + 1;
-//                 const dayOfTheMonth = date.getDate();
-//                 const dayOfTheWeek = date.getDay();
-//                 const hour = data.timestamp_local.slice(11, -3);
+    const uniqueDays = [...new Set(allDays)];
 
-//                 return {
-//                     cityName,
-//                     month,
-//                     dayOfTheMonth,
-//                     dayOfTheWeek,
-//                     hour,
-//                     icon: data.weather.icon,
-//                     temp: data.temp,
-//                     appTemp: data.app_temp,
-//                     pressure: data.pres,
-//                     wind: data.wind_spd,
-//                     humidity: data.rh,
-//                     pop: data.pop,
-//                 }
-//             })
+    const panel = document.querySelector('.details__panel');
+    panel.innerHTML = '';
+    uniqueDays.forEach((day, i) => {
 
-//             showCurrentWeather(weatherData);
-//             showDetails(weatherData)
-//         });
-// }
+        const index = forecast.findIndex(weather => weather.dayOfTheWeek === day);
+
+        const dayOfTheMonth = forecast[index].dayOfTheMonth.toString();
+        const month = forecast[index].month.toString();
+
+        const btn = document.createElement('button');
+        btn.classList.add('details__btn');
+        if (i === 0) btn.classList.add('details__btn--active');
+        btn.setAttribute('data-day', `${day}`);
+
+        btn.textContent = `${day.slice(0,2)} ${dayOfTheMonth.length ===1? '0'+ dayOfTheMonth: dayOfTheMonth}.${month.length ===1? '0'+ month: month}`;
+
+        panel.appendChild(btn);
+    })
+    const btns = document.querySelectorAll('.details__btn');
+
+    btns.forEach(btn => btn.addEventListener('click', (e) => {
+        document.querySelector('.details__btn--active').classList.remove('details__btn--active');
+
+        e.target.classList.add('details__btn--active');
+        showForecast(forecast, e.target.dataset.day);
+    }))
+};
+
+const showForecast = (forecast, day) => {
+    const weatherToShow = forecast.filter(weather => weather.dayOfTheWeek === day);
+
+    const table = document.querySelector('.details__table');
+    table.innerHTML = '';
+    const firstRow = document.createElement('tr');
+    firstRow.classList.add('details__row');
+
+    firstRow.innerHTML = `<th class="details__category">Time</th>
+        <th class="details__category">Temp [&#8451;]</th>
+        <th class="details__category">Forecast</th>
+        <th class="details__category">Max Temp [&#8451;]</th>
+        <th class="details__category">Min Temp [&#8451;]</th>
+        <th class="details__category">Precipitation [%]</th>
+        <th class="details__category">Pressure [hPa]</th>
+        <th class="details__category">Wind [km/h]</th>
+        <th class="details__category">Humidity [%]</th>`;
+
+    table.appendChild(firstRow);
+
+    weatherToShow.forEach(weather => {
+        const row = document.createElement('tr');
+        row.classList.add('details__row');
+
+        row.innerHTML = (
+            `<td class="details__element details__time">${weather.hour.toString().length===1? '0' + weather.hour : weather.hour}:00</td>
+        <td class="details__element">${weather.temp.toFixed(1)}</td>
+        <td class="details__element"><img class="details__img" src="http://openweathermap.org/img/wn/${weather.icon}@2x.png"/></td>
+        <td class="details__element">${weather.tempMax.toFixed(1)}</td>
+        <td class="details__element">${weather.tempMin.toFixed(1)}</td>
+        <td class="details__element">${(weather.pop*100).toFixed()}</td>
+        <td class="details__element">${weather.pressure}</td>
+        <td class="details__element">${(weather.wind*18/5).toFixed(1)}</td>
+        <td class="details__element">${weather.humidity}</td>`);
+
+        table.appendChild(row);
+    })
+}
+
+const getForecast = (latitude, longitude) => {
+
+    fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`)
+        .then(response => response.json())
+        .then(data => {
+
+            const forecast = data.list.map(weather => {
+                const date = new Date(weather.dt_txt);
+                const dayOfTheWeek = days[date.getDay()];
+                const dayOfTheMonth = date.getDate();
+                const month = date.getMonth() + 1;
+                const hour = date.getHours();
+
+                return {
+                    dayOfTheWeek,
+                    dayOfTheMonth,
+                    month,
+                    hour,
+                    temp: weather.main.temp,
+                    tempMin: weather.main.temp_min,
+                    tempMax: weather.main.temp_max,
+                    icon: weather.weather[0].icon,
+                    pop: weather.pop,
+                    pressure: weather.main.pressure,
+                    wind: weather.wind.speed,
+                    humidity: weather.main.humidity,
+                }
+            });
+
+            showButtons(forecast);
+            showForecast(forecast, forecast[0].dayOfTheWeek);
+        });
+
+}
