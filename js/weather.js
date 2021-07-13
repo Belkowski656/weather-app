@@ -37,7 +37,6 @@ search.addEventListener('click', (e) => {
     fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`)
         .then(response => response.json())
         .then(data => {
-            console.log(data)
             getCurrentWeather(data[0].lat, data[0].lon)
             getForecast(data[0].lat, data[0].lon);
         });
@@ -99,6 +98,7 @@ const showButtons = (forecast) => {
 
     const panel = document.querySelector('.details__panel');
     panel.innerHTML = '';
+
     uniqueDays.forEach((day, i) => {
 
         const index = forecast.findIndex(weather => weather.dayOfTheWeek === day);
@@ -162,7 +162,7 @@ const showForecast = (forecast, day) => {
 
         table.appendChild(row);
     })
-}
+};
 
 const getForecast = (latitude, longitude) => {
 
@@ -197,4 +197,54 @@ const getForecast = (latitude, longitude) => {
             showForecast(forecast, forecast[0].dayOfTheWeek);
         });
 
+};
+
+const showMap = (forecast) => {
+    const voivodeship = document.querySelector(`[data-name="${forecast.city}"]`);
+
+    voivodeship.innerHTML = (
+        `<img class="map__icon" src="http://openweathermap.org/img/wn/${forecast.icon}@2x.png"/>
+            <p class="map__temp">
+                <span class="map__number">${forecast.temp}</span>
+                <span class="map__degree">&#8451;</span>
+            </p>`
+    )
+};
+
+const getForecastForMap = (type = 'current') => {
+    const cities = ['szczecin', 'gdańsk', 'olsztyn', 'białystok', 'zielona góra', 'poznań', 'bydgoszcz', 'warszawa', 'wrocław', 'opole', 'łódź', 'kielce', 'lublin', 'katowice', 'kraków', 'rzeszów'];
+
+    if (type === 'current') {
+        cities.forEach(city => {
+            fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+                .then(response => response.json())
+                .then(data => {
+                    const forecast = {
+                        city: data.name,
+                        temp: data.main.temp,
+                        icon: data.weather[0].icon,
+                    }
+
+                    showMap(forecast);
+                })
+        });
+    }
+
 }
+
+getForecastForMap();
+
+// const allDays = forecast.map(weather => weather.dayOfTheWeek);
+// const uniqueDays = [...new Set(allDays)];
+
+// uniqueDays.forEach((day, i) => {
+
+//     const index = forecast.findIndex(weather => weather.dayOfTheWeek === day);
+
+//     const dayOfTheMonth = forecast[index].dayOfTheMonth.toString();
+//     const month = forecast[index].month.toString();
+
+
+//     const text = `${day.slice(0,2)} ${dayOfTheMonth.length ===1? '0'+ dayOfTheMonth: dayOfTheMonth}.${month.length ===1? '0'+ month: month}`;
+
+// })
