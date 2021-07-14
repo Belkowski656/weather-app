@@ -1,3 +1,4 @@
+const apiKey = '8e8a187335f6c408fbf08d6910f5bdc8';
 const search = document.querySelector('.search__btn');
 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
