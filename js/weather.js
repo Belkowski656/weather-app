@@ -37,7 +37,7 @@ search.addEventListener('click', (e) => {
     const city = input.value;
     input.value = '';
 
-    fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`)
+    fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`)
         .then(response => response.json())
         .then(data => {
             getCurrentWeather(data[0].lat, data[0].lon)
@@ -47,7 +47,7 @@ search.addEventListener('click', (e) => {
 })
 
 const getCurrentWeather = (latitude, longitude) => {
-    fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`)
+    fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`)
         .then(response => response.json())
         .then(data => {
             const date = new Date();
@@ -84,7 +84,7 @@ const showCurrentWeather = (weather) => {
 
     document.querySelector('.weather__time').textContent = `(${data.hour}:${data.minutes.toString().length === 1? '0'+ data.minutes : data.minutes })`;
 
-    document.querySelector('.weather__img').src = `http://openweathermap.org/img/wn/${data.icon}@2x.png`;
+    document.querySelector('.weather__img').src = `https://openweathermap.org/img/wn/${data.icon}@2x.png`;
     document.querySelector('.weather__temp').textContent = data.temp.toFixed(1);
 
     document.querySelector('.weather__value:nth-of-type(1)').innerHTML = data.feelsLike.toFixed(1) + ' &#8451;';
@@ -155,7 +155,7 @@ const showForecast = (forecast, day) => {
         row.innerHTML = (
             `<td class="details__element details__time">${weather.hour.toString().length===1? '0' + weather.hour : weather.hour}:00</td>
         <td class="details__element">${weather.temp.toFixed(1)}</td>
-        <td class="details__element"><img class="details__img" src="http://openweathermap.org/img/wn/${weather.icon}@2x.png"/></td>
+        <td class="details__element"><img class="details__img" src="https://openweathermap.org/img/wn/${weather.icon}@2x.png"/></td>
         <td class="details__element">${weather.tempMax.toFixed(1)}</td>
         <td class="details__element">${weather.tempMin.toFixed(1)}</td>
         <td class="details__element">${(weather.pop*100).toFixed()}</td>
@@ -169,7 +169,7 @@ const showForecast = (forecast, day) => {
 
 const getForecast = (latitude, longitude) => {
 
-    fetch(`http://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`)
+    fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`)
         .then(response => response.json())
         .then(data => {
 
@@ -206,7 +206,7 @@ const showMap = (forecast) => {
     const voivodeship = document.querySelector(`[data-name="${forecast.city}"]`);
 
     voivodeship.innerHTML = (
-        `<img class="map__icon" src="http://openweathermap.org/img/wn/${forecast.icon}@2x.png"/>
+        `<img class="map__icon" src="https://openweathermap.org/img/wn/${forecast.icon}@2x.png"/>
             <p class="map__temp">
                 <span class="map__number">${forecast.temp.toFixed()}</span>
                 <span class="map__degree">&#8451;</span>
@@ -219,7 +219,7 @@ const getForecastForMap = (type) => {
 
     if (type === 'current') {
         cities.forEach(city => {
-            fetch(`http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+            fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
                 .then(response => response.json())
                 .then(data => {
                     const forecast = {
@@ -233,7 +233,7 @@ const getForecastForMap = (type) => {
         });
     } else {
         cities.forEach(city => {
-            fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`)
+            fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`)
                 .then(response => response.json())
                 .then(data => {
                     const city = data.city.name;
