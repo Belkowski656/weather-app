@@ -48,6 +48,21 @@ search.addEventListener('click', (e) => {
         .then(data => {
             getCurrentWeather(data[0].lat, data[0].lon)
             getForecast(data[0].lat, data[0].lon);
+        })
+        .catch(err => {
+            const error = document.createElement('p');
+            error.textContent = 'Something went wrong, please try again later.';
+            error.classList.add('error');
+            weatherWrap.innerHTML = '';
+            weatherWrap.appendChild(error);
+            weatherWrap.style.opacity = '1';
+
+            const errorForTable = document.createElement('p');
+            errorForTable.textContent = 'Something went wrong, please try again later.';
+            errorForTable.classList.add('error');
+            tableWrap.innerHTML = '';
+            tableWrap.appendChild(errorForTable);
+            tableWrap.style.opacity = '1';
         });
 
 })
@@ -78,6 +93,14 @@ const getCurrentWeather = (latitude, longitude) => {
                 humidity: data.main.humidity
             }
             showCurrentWeather(weather);
+        })
+        .catch(err => {
+            const error = document.createElement('p');
+            error.textContent = 'Something went wrong, please try again later.';
+            error.classList.add('error');
+            weatherWrap.innerHTML = '';
+            weatherWrap.appendChild(error);
+            weatherWrap.style.opacity = '1';
         });
 }
 
@@ -211,6 +234,14 @@ const getForecast = (latitude, longitude) => {
 
             showButtons(forecast);
             showForecast(forecast, forecast[0].dayOfTheWeek);
+        })
+        .catch(err => {
+            const error = document.createElement('p');
+            error.textContent = 'Something went wrong, please try again later.';
+            error.classList.add('error');
+            tableWrap.innerHTML = '';
+            tableWrap.appendChild(error);
+            tableWrap.style.opacity = '1';
         });
 
 };
