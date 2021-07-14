@@ -2,6 +2,8 @@ const search = document.querySelector('.search__btn');
 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+let type = 'tomorrow';
+
 window.addEventListener('load', () => {
     const success = (position) => {
         const {
@@ -205,13 +207,13 @@ const showMap = (forecast) => {
     voivodeship.innerHTML = (
         `<img class="map__icon" src="http://openweathermap.org/img/wn/${forecast.icon}@2x.png"/>
             <p class="map__temp">
-                <span class="map__number">${forecast.temp}</span>
+                <span class="map__number">${forecast.temp.toFixed()}</span>
                 <span class="map__degree">&#8451;</span>
             </p>`
     )
 };
 
-const getForecastForMap = (type = 'current') => {
+const getForecastForMap = (type) => {
     const cities = ['szczecin', 'gdańsk', 'olsztyn', 'białystok', 'zielona góra', 'poznań', 'bydgoszcz', 'warszawa', 'wrocław', 'opole', 'łódź', 'kielce', 'lublin', 'katowice', 'kraków', 'rzeszów'];
 
     if (type === 'current') {
@@ -228,23 +230,50 @@ const getForecastForMap = (type = 'current') => {
                     showMap(forecast);
                 })
         });
+    } else {
+        cities.forEach(city => {
+            fetch(`http://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}&units=metric`)
+                .then(response => response.json())
+                .then(data => {
+                    const city = data.city.name;
+
+                    const today = new Date(data.list[0].dt_txt);
+                    const tomorrowDate = new Date(today);
+                    tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+                    const tomorrow = tomorrowDate.getDate();
+
+                    data.list.forEach(weather => {
+                        const date = new Date(weather.dt_txt);
+                        const day = date.getDate();
+                        const hour = date.getHours();
+
+                        if (tomorrow === day && hour === 12) {
+                            const forecast = {
+                                city,
+                                temp: weather.main.temp,
+                                icon: weather.weather[0].icon,
+                            }
+                            showMap(forecast);
+                        }
+
+
+                    })
+
+                })
+        });
     }
 
 }
 
-getForecastForMap();
+const changeTypeOfForecast = () => {
+    const select = document.querySelector('.map__select');
 
-// const allDays = forecast.map(weather => weather.dayOfTheWeek);
-// const uniqueDays = [...new Set(allDays)];
+    select.addEventListener('change', (e) => {
+        type = e.target.value;
+        getForecastForMap(type);
+    })
+}
 
-// uniqueDays.forEach((day, i) => {
+changeTypeOfForecast();
 
-//     const index = forecast.findIndex(weather => weather.dayOfTheWeek === day);
-
-//     const dayOfTheMonth = forecast[index].dayOfTheMonth.toString();
-//     const month = forecast[index].month.toString();
-
-
-//     const text = `${day.slice(0,2)} ${dayOfTheMonth.length ===1? '0'+ dayOfTheMonth: dayOfTheMonth}.${month.length ===1? '0'+ month: month}`;
-
-// })
+getForecastForMap(type);
