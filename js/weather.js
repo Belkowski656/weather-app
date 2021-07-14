@@ -1,9 +1,13 @@
 const apiKey = '8e8a187335f6c408fbf08d6910f5bdc8';
+
 const search = document.querySelector('.search__btn');
+const weatherWrap = document.querySelector('.weather');
+const tableWrap = document.querySelector('.details__table-wrap');
+const mapElements = document.querySelectorAll('.map__voivodeship');
 
 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
-let type = 'tomorrow';
+let type = 'current';
 
 window.addEventListener('load', () => {
     const success = (position) => {
@@ -33,6 +37,8 @@ window.addEventListener('load', () => {
 
 search.addEventListener('click', (e) => {
     e.preventDefault();
+    weatherWrap.style.opacity = '0';
+    tableWrap.style.opacity = '0';
     const input = document.querySelector('.search__input');
     const city = input.value;
     input.value = '';
@@ -91,7 +97,6 @@ const showCurrentWeather = (weather) => {
     document.querySelector('.weather__value:nth-of-type(2)').textContent = data.pressure.toFixed(1) + ' hPa';
     document.querySelector('.weather__value:nth-of-type(3)').textContent = (data.wind * 18 / 5).toFixed(1) + ' km/h';
     document.querySelector('.weather__value:nth-of-type(4)').textContent = data.humidity + ' %';
-
 };
 
 const showButtons = (forecast) => {
@@ -121,6 +126,7 @@ const showButtons = (forecast) => {
     const btns = document.querySelectorAll('.details__btn');
 
     btns.forEach(btn => btn.addEventListener('click', (e) => {
+        tableWrap.style.opacity = '0';
         document.querySelector('.details__btn--active').classList.remove('details__btn--active');
 
         e.target.classList.add('details__btn--active');
@@ -165,6 +171,13 @@ const showForecast = (forecast, day) => {
 
         table.appendChild(row);
     })
+
+    document.querySelector('.loading-wrap').style.display = 'none';
+    setTimeout(() => {
+        weatherWrap.style.opacity = '1';
+        tableWrap.style.opacity = '1';
+    }, 100)
+
 };
 
 const getForecast = (latitude, longitude) => {
@@ -203,15 +216,18 @@ const getForecast = (latitude, longitude) => {
 };
 
 const showMap = (forecast) => {
-    const voivodeship = document.querySelector(`[data-name="${forecast.city}"]`);
+    setTimeout(() => {
+        const voivodeship = document.querySelector(`[data-name="${forecast.city}"]`);
+        voivodeship.style.opacity = '1';
 
-    voivodeship.innerHTML = (
-        `<img class="map__icon" src="https://openweathermap.org/img/wn/${forecast.icon}@2x.png"/>
-            <p class="map__temp">
-                <span class="map__number">${forecast.temp.toFixed()}</span>
-                <span class="map__degree">&#8451;</span>
-            </p>`
-    )
+        voivodeship.innerHTML = (
+            `<img class="map__icon" src="https://openweathermap.org/img/wn/${forecast.icon}@2x.png"/>
+                <p class="map__temp">
+                    <span class="map__number">${forecast.temp.toFixed()}</span>
+                    <span class="map__degree">&#8451;</span>
+                </p>`
+        )
+    }, 50);
 };
 
 const getForecastForMap = (type) => {
@@ -270,6 +286,10 @@ const changeTypeOfForecast = () => {
     const select = document.querySelector('.map__select');
 
     select.addEventListener('change', (e) => {
+        mapElements.forEach(elem => {
+            elem.style.opacity = 0;
+        })
+
         type = e.target.value;
         getForecastForMap(type);
     })
