@@ -37,11 +37,16 @@ window.addEventListener('load', () => {
 
 search.addEventListener('click', (e) => {
     e.preventDefault();
-    weatherWrap.style.opacity = '0';
-    tableWrap.style.opacity = '0';
+
     const input = document.querySelector('.search__input');
     const city = input.value;
+    if (city.length === 0) return alert("Enter City Name");
     input.value = '';
+
+    weatherWrap.style.opacity = '0';
+    tableWrap.style.opacity = '0';
+
+
 
     fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${city}&limit=1&appid=${apiKey}`)
         .then(response => response.json())
