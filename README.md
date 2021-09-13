@@ -7,6 +7,9 @@ This is a Weather Application that provides the main functions you'd expect from
 
 ---
 
+[Link to website](https://belkowski656.github.io/weather-app/)
+
+=============
 ## Features
 - Showing weather for your current location
 - Showing weather details such as temp, feels like temp, pressure, wind speed, humidity,
